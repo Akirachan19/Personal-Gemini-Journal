@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "JournalInteraction": {
+      "title": "JournalInteraction",
+      "description": "User journal reflection and AI multi-turn interaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "initialPrompt": { "type": "string", "maxLength": 10000 },
+        "mode": { "type": "string", "enum": ["reflect", "summarize", "brainstorm", "chat"] },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" },
+        "tags": { "type": "array" }
+      },
+      "required": ["id", "userId", "mode", "createdAt", "updatedAt"]
+    },
+    "NotificationSettings": {
+      "title": "NotificationSettings",
+      "description": "User external notification webhook preferences and credentials",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "slackEnabled": { "type": "boolean" },
+        "slackWebhookUrl": { "type": "string", "maxLength": 1024 },
+        "discordEnabled": { "type": "boolean" },
+        "discordWebhookUrl": { "type": "string", "maxLength": 1024 },
+        "emailEnabled": { "type": "boolean" },
+        "emailAddress": { "type": "string", "maxLength": 256 },
+        "emailWebhookUrl": { "type": "string", "maxLength": 1024 },
+        "triggerMode": { "type": "string", "enum": ["all", "summarize", "brainstorm", "keywords", "manual"] },
+        "filterKeywords": { "type": "array" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id", "userId", "updatedAt"]
+    },
+    "NotificationLog": {
+      "title": "NotificationLog",
+      "description": "Audit record of dispatched external notifications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "interactionId": { "type": "string", "maxLength": 128 },
+        "provider": { "type": "string", "enum": ["slack", "discord", "email"] },
+        "status": { "type": "string", "enum": ["success", "failed"] },
+        "entryTitle": { "type": "string", "maxLength": 256 },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "userId", "provider", "status", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/interactions/{interactionId}": {
+      "schema": "JournalInteraction",
+      "description": "Owner-isolated collection for user journal sessions"
+    },
+    "/users/{userId}/notificationSettings/{settingId}": {
+      "schema": "NotificationSettings",
+      "description": "Owner-isolated collection for user notification configuration and webhooks"
+    },
+    "/users/{userId}/notificationLogs/{logId}": {
+      "schema": "NotificationLog",
+      "description": "Owner-isolated audit log for dispatched external notifications"
+    }
+  }
+}

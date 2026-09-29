@@ -1,0 +1,6 @@
+{
+  "name": "Gemini Journal & Reflection Assistant",
+  "description": "User-authenticated journal and reflection assistant with Cloud Firestore isolation and Gemini 3.6 Flash AI processing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
