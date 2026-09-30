@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+       Base: '/Personal-Gemini-Journal/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
