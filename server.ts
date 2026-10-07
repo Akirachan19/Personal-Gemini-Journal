@@ -9,6 +9,18 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
+// CORS headers to support GitHub Pages and custom frontend deployments
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
+
 // 1. Top-Level Request Deserialization (Ordering Guarantee)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

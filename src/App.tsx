@@ -30,6 +30,7 @@ import { ThreatModelModal } from './components/ThreatModelModal';
 import { NotificationSettingsModal } from './components/NotificationSettingsModal';
 import { PromptSparkModal } from './components/PromptSparkModal';
 import { AnalyticsModal } from './components/AnalyticsModal';
+import { fetchApiJson } from './utils/api';
 
 export default function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -272,11 +273,14 @@ export default function App() {
 
     try {
       // Call server-side Gemini API route
-      const response = await fetch('/api/gemini/reflect', {
+      const data = await fetchApiJson<{
+        reply: string;
+        modelUsed?: string;
+        suggestedTitle?: string;
+        detectedMood?: string;
+        sentimentScore?: number;
+      }>('/api/gemini/reflect', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           prompt: promptText.trim(),
           mode: mode,
@@ -284,12 +288,6 @@ export default function App() {
         }),
       });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || `Server responded with status ${response.status}`);
-      }
-
-      const data = await response.json();
       const assistantMessage: ChatMessage = {
         id: 'msg_' + Date.now() + '_ai',
         role: 'assistant',

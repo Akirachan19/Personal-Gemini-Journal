@@ -23,6 +23,7 @@ import {
 } from 'firebase/firestore';
 import type { JournalInteraction, NotificationSettings, NotificationLog, NotificationPayloadDirective, NotificationDispatchResult } from './types';
 import firebaseConfigJson from '../firebase-applet-config.json';
+import { fetchApiJson } from './utils/api';
 
 // Initialize Firebase App
 const firebaseConfig = {
@@ -343,16 +344,10 @@ export function subscribeToNotificationLogs(
 export async function dispatchExternalNotification(
   payload: NotificationPayloadDirective
 ): Promise<NotificationDispatchResult> {
-  const res = await fetch('/api/notifications/dispatch', {
+  const data = await fetchApiJson<{ statusText?: string }>('/api/notifications/dispatch', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.error || `Failed to dispatch notification to ${payload.provider}`);
-  }
 
   return {
     provider: payload.provider,
@@ -370,21 +365,13 @@ export async function testExternalNotification(
   webhookUrl: string,
   emailAddress?: string
 ): Promise<{ success: boolean; message: string }> {
-  const res = await fetch('/api/notifications/test', {
+  return fetchApiJson<{ success: boolean; message: string }>('/api/notifications/test', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       provider,
       webhookUrl,
       emailAddress,
     }),
   });
-
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.error || `Test failed for ${provider}`);
-  }
-
-  return data;
 }
 
