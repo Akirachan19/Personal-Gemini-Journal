@@ -105,7 +105,39 @@ gcloud run services update mindreflect-ai \
 
 ---
 
-## 5. Functional Stability & Walkthrough Test Cases
+## 5. GitHub Pages Deployment & Troubleshooting (Fixing the White Blank Screen)
+
+### Why Did GitHub Pages Show a White Blank Page?
+
+1. **Relative Asset Paths (`base: './'`)**:
+   - By default, Vite builds assets using absolute root URLs (`/assets/index-xxx.js`).
+   - GitHub Pages serves repositories from a subpath: `https://<username>.github.io/<repository-name>/`.
+   - When the browser tried to load `/assets/index-xxx.js`, it looked for `https://<username>.github.io/assets/index-xxx.js` (missing `/<repository-name>/`), returning **HTTP 404**.
+   - Because the main JavaScript bundle never loaded, the page remained completely blank.
+   - **Fix Applied**: `vite.config.ts` now defines `base: './'`, ensuring all assets resolve relative to the repository path.
+
+2. **Static Hosting vs. Node.js Backend**:
+   - GitHub Pages is a static file host; it does **not** execute `server.ts` or Node.js Express backend routes (`/api/*`).
+   - If deploying the frontend to GitHub Pages, the backend (`server.ts`) should run on Google Cloud Run or another Node host, with CORS enabled (already configured in `server.ts`).
+   - You can point the client to your deployed backend by setting `VITE_API_BASE_URL` in `.env` or setting `mindreflect_custom_api_url` in localStorage.
+
+3. **Firebase Authorized Domains**:
+   - In your [Firebase Console](https://console.firebase.google.com/):
+     - Go to **Authentication** &rarr; **Settings** &rarr; **Authorized Domains**.
+     - Add `<username>.github.io` to the list.
+     - Otherwise, Google Sign-In will reject the popup with `auth/unauthorized-domain`.
+
+### Deploying to GitHub Pages via GitHub Actions
+
+A ready-to-use GitHub Actions workflow is provided at `.github/workflows/deploy.yml`:
+1. Push your repository to GitHub (`main` branch).
+2. On GitHub, navigate to **Settings** &rarr; **Pages**.
+3. Under **Build and deployment** &rarr; **Source**, select **GitHub Actions**.
+4. The workflow will automatically build with `npx vite build` and deploy the static app to `https://<username>.github.io/<repository-name>/`!
+
+---
+
+## 6. Functional Stability & Walkthrough Test Cases
 
 Every user interaction has been mapped to functional verification test cases:
 

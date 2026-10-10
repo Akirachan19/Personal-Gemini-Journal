@@ -30,6 +30,7 @@ import { ThreatModelModal } from './components/ThreatModelModal';
 import { NotificationSettingsModal } from './components/NotificationSettingsModal';
 import { PromptSparkModal } from './components/PromptSparkModal';
 import { AnalyticsModal } from './components/AnalyticsModal';
+import { fetchApiJson } from './utils/api';
 
 export default function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -274,9 +275,6 @@ export default function App() {
       // Call server-side Gemini API route
       const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           prompt: promptText.trim(),
           mode: mode,
@@ -284,12 +282,6 @@ export default function App() {
         }),
       });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || `Server responded with status ${response.status}`);
-      }
-
-      const data = await response.json();
       const assistantMessage: ChatMessage = {
         id: 'msg_' + Date.now() + '_ai',
         role: 'assistant',

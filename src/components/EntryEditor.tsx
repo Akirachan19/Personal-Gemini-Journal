@@ -38,6 +38,7 @@ import type {
   MoodType, 
   ActionItem 
 } from '../types';
+import { fetchApiJson } from '../utils/api';
 
 interface EntryEditorProps {
   interaction: JournalInteraction | null;
@@ -279,14 +280,16 @@ export const EntryEditor: React.FC<EntryEditorProps> = ({
     setIsExtractingActions(true);
     try {
       const fullText = `${interaction.title}\n\n${interaction.initialPrompt}\n\n${interaction.messages?.map(m => m.content).join('\n\n') || ''}`;
-      const res = await fetch('/api/gemini/analyze-insights', {
+      const data = await fetchApiJson<{
+        actionItems?: string[];
+        keyTakeaways?: string[];
+        mood?: MoodType;
+        sentimentScore?: number;
+        suggestedTags?: string[];
+      }>('/api/gemini/analyze-insights', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: fullText }),
       });
-
-      if (!res.ok) throw new Error('Analysis failed');
-      const data = await res.json();
 
       const newActions: ActionItem[] = (data.actionItems || []).map((t: string) => ({
         id: 'act_' + Math.random().toString(36).substring(2, 9),

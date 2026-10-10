@@ -15,6 +15,7 @@ import {
   Zap
 } from 'lucide-react';
 import type { MoodType } from '../types';
+import { fetchApiJson } from '../utils/api';
 
 interface PromptSparkModalProps {
   isOpen: boolean;
@@ -95,14 +96,11 @@ export const PromptSparkModal: React.FC<PromptSparkModalProps> = ({
   const handleGenerateFresh = async () => {
     setIsGenerating(true);
     try {
-      const res = await fetch('/api/gemini/sparks', {
+      const data = await fetchApiJson<{ prompts: string[] }>('/api/gemini/sparks', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category: selectedCategory }),
       });
 
-      if (!res.ok) throw new Error('Generation failed');
-      const data = await res.json();
       if (Array.isArray(data.prompts) && data.prompts.length > 0) {
         setSparks((prev) => ({
           ...prev,
