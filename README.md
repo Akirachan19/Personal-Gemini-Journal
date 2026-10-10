@@ -146,7 +146,7 @@ Every user interaction has been mapped to functional verification test cases:
 2. **Expected Outcome**: The landing page displays with value propositions, security architecture badges, and a "Continue with Google Sign-In" button.
 3. Click "Continue with Google Sign-In".
 4. Authenticate via the Google popup.
-5. **Expected Outcome**: The dashboard transitions into the authenticated private workspace, showing the user's Google avatar and email in the top navigation bar.
+5. **Expected Outcome**: The dashboard transitions into the authenticated private workspace, showing the user's Google avatar and email in the top navigation bar .
 
 ### Test Case 2: Multi-Turn Journal Reflection & Gemini Generation
 1. In the active journal editor, select the **Reflect** mode pill.
